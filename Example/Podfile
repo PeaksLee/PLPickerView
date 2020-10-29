@@ -1,0 +1,12 @@
+use_frameworks!
+platform :ios, '10.0'
+
+target 'PLPickerView_Example' do
+  pod 'PLPickerView', :path => '../'
+
+  target 'PLPickerView_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end

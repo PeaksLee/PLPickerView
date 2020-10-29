@@ -1,0 +1,6 @@
+framework module Pods_PLPickerView_Example {
+  umbrella header "Pods-PLPickerView_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}

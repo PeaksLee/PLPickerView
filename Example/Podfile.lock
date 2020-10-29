@@ -1,0 +1,16 @@
+PODS:
+  - PLPickerView (0.1.0)
+
+DEPENDENCIES:
+  - PLPickerView (from `../`)
+
+EXTERNAL SOURCES:
+  PLPickerView:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  PLPickerView: 3905c5777625fb83280d4bb3dfdf7443c3b24f03
+
+PODFILE CHECKSUM: 3f5ad6bd26997c15e3449c994ecc79104fa4e6ee
+
+COCOAPODS: 1.9.1
