@@ -62,8 +62,17 @@ public class PLPickerView: UIView, UITableViewDelegate, UITableViewDataSource{
     }
 
     public func reloadAllComponents() {
-        for obj in componentViews {
-            obj.reloadData()
+        
+        numberOfComponents = self.dataSource?.numberOfComponents(in: self) ?? 0
+        
+        if numberOfComponents != componentViews.count {
+            for obj in componentViews { obj.removeFromSuperview() }
+            componentViews.removeAll()
+            setupComponentsViews()
+            setNeedsLayout()
+            
+        } else {
+            for obj in componentViews { obj.reloadData() }
         }
     }
 
@@ -159,20 +168,23 @@ public class PLPickerView: UIView, UITableViewDelegate, UITableViewDataSource{
     
     func setupComponentsViews() {
         
-        numberOfComponents = self.dataSource?.numberOfComponents(in: self) ?? 0
-        
-        if self.componentViews.count == 0 {
+        if let dataSource = self.dataSource {
             
-            for _ in 0..<numberOfComponents {
-                let tableView: PLPickerTableView = PLPickerTableView(frame: .zero, style: .plain)
-                tableView.separatorStyle = .none
-                tableView.showsVerticalScrollIndicator = false
-                tableView.showsHorizontalScrollIndicator = false
-                tableView.delegate = self
-                tableView.dataSource = self
-                addSubview(tableView)
-                sendSubview(toBack: tableView)
-                componentViews.append(tableView)
+            numberOfComponents = dataSource.numberOfComponents(in: self)
+            
+            if self.componentViews.count == 0 {
+                
+                for _ in 0..<numberOfComponents {
+                    let tableView: PLPickerTableView = PLPickerTableView(frame: .zero, style: .plain)
+                    tableView.separatorStyle = .none
+                    tableView.showsVerticalScrollIndicator = false
+                    tableView.showsHorizontalScrollIndicator = false
+                    tableView.delegate = self
+                    tableView.dataSource = self
+                    addSubview(tableView)
+                    sendSubview(toBack: tableView)
+                    componentViews.append(tableView)
+                }
             }
         }
     }
