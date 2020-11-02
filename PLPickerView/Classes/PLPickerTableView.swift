@@ -12,7 +12,7 @@ class PLPickerTableView: UITableView {
     var pickerSelectRow: Int = 0
     
     func pickerSelectRow(_ pickerSelectRow: Int, rowHeight: CGFloat, animated: Bool) -> Void {
-        setContentOffset(CGPoint(x: 0, y: rowHeight*CGFloat(pickerSelectRow)-contentInset.top), animated: animated)
+        selectRow(at: IndexPath(row: pickerSelectRow, section: 0), animated: animated, scrollPosition: .middle)
         self.pickerSelectRow(pickerSelectRow, vibrate: false)
     }
     

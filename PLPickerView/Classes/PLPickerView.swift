@@ -181,6 +181,7 @@ public class PLPickerView: UIView, UITableViewDelegate, UITableViewDataSource{
                     tableView.showsHorizontalScrollIndicator = false
                     tableView.delegate = self
                     tableView.dataSource = self
+                    tableView.estimatedRowHeight = 0
                     addSubview(tableView)
                     sendSubview(toBack: tableView)
                     componentViews.append(tableView)
