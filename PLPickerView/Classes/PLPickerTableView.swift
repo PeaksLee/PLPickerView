@@ -7,6 +7,13 @@
 
 import UIKit
 
+class PLPickerTableViewCell: UITableViewCell {
+    
+    override func layoutSubviews() {
+        textLabel?.frame = contentView.bounds
+    }
+}
+
 class PLPickerTableView: UITableView {
     
     var pickerSelectRow: Int = 0

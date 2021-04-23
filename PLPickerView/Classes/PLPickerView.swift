@@ -9,7 +9,7 @@ import UIKit
 
 public class PLPickerView: UIView, UITableViewDelegate, UITableViewDataSource{
 
-    weak public var _dataSource: PLPickerViewDataSource?
+    weak private var _dataSource: PLPickerViewDataSource?
     weak public var dataSource: PLPickerViewDataSource? {
         get { return _dataSource }
         set {
@@ -78,6 +78,7 @@ public class PLPickerView: UIView, UITableViewDelegate, UITableViewDataSource{
 
     public func reloadComponent(_ component: Int) {
         componentViews[component].reloadData()
+        rotateCells(componentViews[component])
     }
     
     public func selectRow(_ row: Int, inComponent component: Int, animated: Bool) {
@@ -97,20 +98,7 @@ public class PLPickerView: UIView, UITableViewDelegate, UITableViewDataSource{
             setupUI()
         }
     }
-    
-    public override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        if superview != nil {
-            DispatchQueue.main.async {
-                for obj in self.componentViews {
-                    if obj.pickerSelectRow == 0 {
-                        self.rotateCells(obj)
-                    }
-                }
-            }
-        }
-    }
-    
+
     public override func layoutSubviews() {
         
         if componentViews.count > 0 {
@@ -210,7 +198,7 @@ public class PLPickerView: UIView, UITableViewDelegate, UITableViewDataSource{
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "PLPickerViewCell") ?? UITableViewCell(style: .default, reuseIdentifier: "PLPickerViewCell")
+        let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "PLPickerViewCell") ?? PLPickerTableViewCell(style: .default, reuseIdentifier: "PLPickerViewCell")
         cell.contentView.backgroundColor = UIColor.clear
         cell.backgroundColor = UIColor.clear
         cell.selectionStyle = .none
@@ -242,11 +230,7 @@ public class PLPickerView: UIView, UITableViewDelegate, UITableViewDataSource{
                 cell.textLabel?.text = nil
             }
         } else {
-            for obj in cell.contentView.subviews {
-                if !(obj is UILabel) {
-                    obj .removeFromSuperview()
-                }
-            }
+            for obj in cell.contentView.subviews { if !(obj is UILabel) {  obj .removeFromSuperview() } }
         }
         
         return cell
@@ -282,17 +266,21 @@ public class PLPickerView: UIView, UITableViewDelegate, UITableViewDataSource{
         }
     }
     
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        for view in componentViews { if view != scrollView { view.isUserInteractionEnabled = false } }
+    }
+    
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         scrollViewDidEndScroll(tableView: scrollView as! PLPickerTableView)
     }
     
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if !decelerate {
-            scrollViewDidEndScroll(tableView: scrollView as! PLPickerTableView)
-        }
+        if !decelerate { scrollViewDidEndScroll(tableView: scrollView as! PLPickerTableView) }
     }
     
     func scrollViewDidEndScroll(tableView: PLPickerTableView) -> Void {
+        
+        for view in componentViews { if view != tableView { view.isUserInteractionEnabled = true } }
         
         let component: Int = componentViews.index(of: tableView)!
         let rowHeight: CGFloat = self.rowHeight(component: component)
@@ -301,14 +289,14 @@ public class PLPickerView: UIView, UITableViewDelegate, UITableViewDataSource{
             
             let y: CGFloat = cell.frame.midY-tableView.contentOffset.y
             
-            if fabs(bounds.size.height/2-y) < rowHeight/2 {
+            if fabs(bounds.size.height/2-y) <= rowHeight/2 {
                 let contentOffsetY: CGFloat = tableView.contentOffset.y - (bounds.size.height/2-y);
                 let index: Int = Int(round((contentOffsetY + tableView.contentInset.top)/rowHeight))
                 tableView.pickerSelectRow(index, rowHeight: rowHeight, animated: true)
                 delegate?.pickerView?(self, didSelectRow: index, inComponent: component)
+                break
             }
         }
-        
     }
     
     func rotateCells(_ tableView: PLPickerTableView) -> Void {
